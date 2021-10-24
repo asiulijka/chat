@@ -7,8 +7,9 @@ const messageContentInput = document.getElementById('message-content');// refere
 
 let userName = "";
 
-// a moze:
-// loginForm = document.querySelector('welcome-form');
+const socket = io();
+
+socket.on('message', ({ author, content }) => addMessage(author, content));
 
 
 loginForm.addEventListener('submit', function(event){
@@ -45,8 +46,14 @@ addMessageForm.addEventListener('submit', function(event){
     alert("Message must be filled out");
   } else {
     addMessage(userName, messageContentInput.value);
+    socket.emit('message', { author: userName, content: messageContentInput.value});
     addMessageForm.value == "";
+    // messageContentInput.value = '';
   }
 });
+
+
+
+
 
 
