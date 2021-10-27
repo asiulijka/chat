@@ -6,11 +6,9 @@ const userNameInput = document.getElementById('username'); // referencja do pola
 const messageContentInput = document.getElementById('message-content');// referencja do pola tekstowego z formularza do wysyłania wiadomości.
 
 let userName = "";
-
 const socket = io();
 
 socket.on('message', ({ author, content }) => addMessage(author, content));
-
 
 loginForm.addEventListener('submit', function(event){
   event.preventDefault();
@@ -18,9 +16,9 @@ loginForm.addEventListener('submit', function(event){
     alert("Name must be filled out");
   } else {
     userName = userNameInput.value;
-
     messagesSection.classList.add("show");
     loginForm.classList.remove("show");
+    socket.emit('join', {userName});
   }
 });
 
@@ -38,18 +36,27 @@ function addMessage(author, content) {
   messagesList.appendChild(message);
 }
 
+function sendMessage(e) {
+  e.preventDefault();
+
+  let messageContent = messageContentInput.value;
+  let author = userNameInput.value;
+
+  if(!messageContent.length) {
+    alert('You have to type something!');
+  }
+  else {
+    addMessage(author, messageContent);
+    socket.emit('message', { author: author, content: messageContent })
+    messageContentInput.value = '';
+  }
+
+}
+
 addMessageForm.addEventListener('submit', function(event){
   event.preventDefault();
   console.log(addMessageForm);
-
-  if (messageContentInput.value == "") {
-    alert("Message must be filled out");
-  } else {
-    addMessage(userName, messageContentInput.value);
-    socket.emit('message', { author: userName, content: messageContentInput.value});
-    addMessageForm.value == "";
-    // messageContentInput.value = '';
-  }
+  sendMessage(event);
 });
 
 
